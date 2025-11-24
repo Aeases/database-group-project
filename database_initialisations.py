@@ -1,12 +1,13 @@
 table_definitions = [
     """CREATE TABLE EMPLOYEE(
-        employee_id INT PRIMARY KEY IDENTITY(1,1),
+        employee_id INTEGER PRIMARY KEY AUTOINCREMENT,
         e_name, 
         e_phone, 
-        FOREIGN KEY (supervisor_id) REFERENCES EMPLOYEE(employee_id), 
-        level
-    )""",
-
+        supervisor_id,
+        level,
+        FOREIGN KEY (supervisor_id) REFERENCES EMPLOYEE(employee_id)
+    );""",
+    # TO DO: add types to the columns
     """CREATE TABLE CMM_ACTIVITY(
         activity_id,
         activity_desc,

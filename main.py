@@ -1,12 +1,12 @@
 import sqlite3 as sql
 import os
 from database_initialisations import table_definitions, employee_definitions
+
+shouldCreateNew = not os.path.exists("./database.db")
 con = sql.connect("database.db")
+
 cur = con.cursor()
-
-
-
-if not (os.path.exists("./database.db")):
+if shouldCreateNew:
     for table in table_definitions:
         cur.execute(table) 
 
@@ -20,14 +20,13 @@ def getTableColumns(table_name):
     table_columns = [result[1] for result in cur.fetchall()]
     return table_columns
 
-def getUserInput():
-    print("\033[33;4m", end="")
+def getUserInput(prompt: str):
+    print(f"{prompt}\033[33;4m", end="")
     res = input("")
     print("\033[0m", end="")
     return res
 
-print(getTableColumns(getTableNames()[0]))
+print("Employee Table Rows: " + str(getTableColumns(getTableNames()[0])))
 
-print("Employee ID: ", end="");
-employeeID = getUserInput()
+employeeID = getUserInput("Employee ID: ")
 
