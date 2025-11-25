@@ -28,5 +28,5 @@ def getUserInput(prompt: str):
 
 print("Employee Table Rows: " + str(getTableColumns(getTableNames()[0])))
 
-employeeID = getUserInput("Employee ID: ")
+#employeeID = getUserInput("Employee ID: ")
 
