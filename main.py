@@ -1,14 +1,20 @@
 import sqlite3 as sql
 import os
-from database_initialisations import table_definitions, employee_definitions
+from database_initialisations import table_definitions, table_rows
 
 shouldCreateNew = not os.path.exists("./database.db")
 con = sql.connect("database.db")
 
 cur = con.cursor()
 if shouldCreateNew:
+    # Create Tables
     for table in table_definitions:
-        cur.execute(table) 
+        cur.execute(table)
+    con.commit()
+    # Insert Rows into tables
+    for new_row in table_rows:
+        cur.execute(new_row)
+    con.commit()
 
 def getTableNames():
     cur.execute("SELECT name FROM sqlite_master WHERE type='table'")
@@ -27,6 +33,7 @@ def getUserInput(prompt: str):
     return res
 
 print("Employee Table Rows: " + str(getTableColumns(getTableNames()[0])))
+cur.execute("INSERT INTO EMPLOYEE (e_name, e_phone, supervisor_id, level) VALUES ('John Arbuckle', '61929507', NULL, 1)")
 
 #employeeID = getUserInput("Employee ID: ")
 
