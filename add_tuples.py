@@ -12,14 +12,14 @@ def user_add_tuple():
     
     for i in range(0, numOfInput):
         if i > 0: print(f"\nInsertion #{i+1} into {table_choice}\n")
-        all_items.append(get_all_items_in_table(table_choice))
+        all_items.append(get_all_columns_in_table(table_choice))
 
 
 
     [add_tuple_to_sql(table_choice, column) for column in all_items]
     # print(all_items)
 
-def get_all_items_in_table(table):
+def get_all_columns_in_table(table):
     all_columns = getTableColumns(table)
     all_items = []
 
