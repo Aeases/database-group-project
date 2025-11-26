@@ -3,6 +3,8 @@ from add_tuples import user_add_tuple
 from updating_tuples import user_update_tuple
 from updating_tuples import user_delete_tuple
 from utils import getUserInput, getTableUserInput
+from sqlite_print import print_cursor
+# from scheduled_activities import getScheduledActivities
 print("""
 1 | Insert Tuples
 2 | Update Tuples
@@ -33,7 +35,11 @@ match choice:
     case '3':
         user_delete_tuple(table_choice)
     case '4':
-        print("still to come :)")
+        user_SQL_query = getUserInput("SQL QUERY: ", ansiStart='')
+        print("-- Result --\n")
+        print_cursor(cur.execute(user_SQL_query))
     case '5':
+        # getScheduledActivities()
         print("still to come :)")
+        ...
 con.commit()

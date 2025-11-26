@@ -8,7 +8,6 @@ table_definitions = [
         FOREIGN KEY (supervisor_id) REFERENCES EMPLOYEE(employee_id)
     );""",
     
-    # TO DO: add types to the columns
     """CREATE TABLE CMM_ACTIVITY(
         activity_id INTEGER PRIMARY KEY AUTOINCREMENT,
         activity_desc VARCHAR(100),
@@ -46,7 +45,6 @@ table_definitions = [
         area_type VARCHAR(15),
         last_maintenance_date DATE
     )""",
-    #ACTIVITY_LOCATIONS no Primary
     """CREATE TABLE ACTIVITY_LOCATIONS(
         location_id INTEGER, 
         a_id INTEGER,

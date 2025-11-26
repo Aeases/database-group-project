@@ -15,6 +15,7 @@ def getTablePrimaryColumns(table_name):
     table_columns = [result[0] for result in cur.fetchall()]
     return table_columns
 
+
 def getUserPrimaryColumns(table):
     primary_columns = getTablePrimaryColumns(table)
 
@@ -27,7 +28,7 @@ def getUserPrimaryColumns(table):
 
 # Takes in array of primary keys e.g. for EMPLOYEE, [employee_id],
 # or for ACTIVITY_LOCATIONS, [location_id, a_id]
-def searchPkToWhereClause(table, search_primary_keys,):
+def searchPkToWhereClause(table, search_primary_keys):
     primary_keys = getTablePrimaryColumns(table)
     where_clause = ''
     if (search_primary_keys.__len__() > 1):
@@ -45,18 +46,16 @@ def searchForRecord(table, search_primary_keys):
 
     return result[0] # <- Assume only one result
 
-def getUserInput(prompt: str):
-    print(f"{prompt}\033[33;4m", end="")
+def getUserInput(prompt: str, ansiStart = '\033[1;32m'):
+    print(f"{prompt}{ansiStart}", end="")
     res = input("")
-    print("\033[0m", end="")
+    print('\033[0m', end="")
     return res
 
 def getUserBinaryInput(prompt):
     while True:
 
-        print(f"{prompt}\033[33;4m", end="")
-        res = input("")
-        print("\033[0m", end="")
+        res = getUserInput(prompt, '\033[1;31m')
 
         if res.lower() in ['y', '1', 'yes', 'true', 't']:
             return True
