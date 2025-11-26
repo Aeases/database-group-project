@@ -36,7 +36,7 @@ table_definitions = [
         a_id INTEGER, 
         c_id INTEGER,
         FOREIGN KEY (a_id) REFERENCES CMM_ACTIVITY(activity_id),
-        FOREIGN KEY (c_id) REFERENCES SUBCONTRACTOR(c_id)
+        FOREIGN KEY (c_id) REFERENCES SUBCONTRACTOR(c_id),
         PRIMARY KEY (a_id, c_id)
     )""",
     """CREATE TABLE CAMPUS_AREA(
