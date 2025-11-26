@@ -38,7 +38,7 @@ def searchForRecord(table, search_primary_keys):
     cur.execute(f'SELECT * FROM {table} WHERE {where_clause}')
     result = cur.fetchall()
 
-    return result
+    return result[0] # <- Assume only one result
 
 def getUserInput(prompt: str):
     print(f"{prompt}\033[33;4m", end="")
