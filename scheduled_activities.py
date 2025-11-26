@@ -6,8 +6,8 @@ def getScheduledActivities():
     end_date = getUserInput("Activities ending by date (YYYY-MM-DD): ")
     area_name = getUserInput("Which campus area are you looking for?: ")
 
-    filterConditions = []
-    filterParameters = []
+    conditions = []
+    params = []
     
     sqlQuery = """
     SELECT
@@ -28,24 +28,24 @@ def getScheduledActivities():
     """
 
     if start_date:
-        filterConditions.append("activity.start_date >= ?")
-        filterParameters.append(start_date)
+        conditions.append("activity.start_date >= ?")
+        params.append(start_date)
     
     if end_date:
-        filterConditions.append("activity.end_date <= ?")
-        filterParameters.append(end_date)
+        conditions.append("activity.end_date <= ?")
+        params.append(end_date)
 
     if area_name:
-        filterConditions.append("area.area_name LIKE ?")
-        filterParameters.append(f'%{area_name}%')
+        conditions.append("area.area_name LIKE ?")
+        params.append(f'%{area_name}%')
     
-    if filterConditions:
-        sqlQuery += " WHERE " + " AND ".join(filterConditions)
+    if conditions:
+        sqlQuery += " WHERE " + " AND ".join(conditions)
     
     sqlQuery += " ORDER BY activity.start_date, activity.end_date, area.area_name"
 
     try:
-        cur.execute(sqlQuery, filterParameters)
+        cur.execute(sqlQuery, params)
         allActivities = cur.fetchall()
 
         if not allActivities:
