@@ -34,5 +34,3 @@ def add_tuple_to_sql(target_table, tuple):
     
     insertion_string = f"INSERT INTO {target_table} ({", ".join(getTableColumns(target_table))}) VALUES ({", ".join(escaped_values)})"
     cur.execute(insertion_string)
-    print(insertion_string)
-    con.commit()

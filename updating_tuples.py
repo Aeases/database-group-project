@@ -51,16 +51,8 @@ def perform_update(table, search_primary_keys, updated_values):
         set_clause = set_clause[0]
     
     where_clause = searchPkToWhereClause(table, search_primary_keys)
-    print(f"UPDATE {table} SET {set_clause} WHERE {where_clause}")
     con.execute(f"UPDATE {table} SET {set_clause} WHERE {where_clause}")
 
 def perform_deletion(table, search_primary_keys):
     where_clause = searchPkToWhereClause(table, search_primary_keys)
-
     con.execute(f"DELETE FROM {table} WHERE {where_clause}")
-
-
-
-# user_update_tuple()
-user_delete_tuple(getTableUserInput("Table: "))
-con.commit()
