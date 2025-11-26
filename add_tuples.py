@@ -1,5 +1,5 @@
 from db import cur, con
-from utils import getUserInput, getTableColumns, getTableUserInput
+from utils import getUserInput, getTableColumns, getTableUserInput, escapeString
 
 def user_add_tuple():
     table_choice = getTableUserInput("Table: ")
@@ -30,15 +30,10 @@ def get_all_columns_in_table(table):
 
 def add_tuple_to_sql(target_table, tuple):
     getTableColumns(target_table)
-    escaped_strings = []
 
-    for item in tuple:
-        if type(item) is int:
-            escaped_strings.append(item)
-        if type(item) is str:
-            escaped_strings.append(f"'{item}'")
+    escaped_values = [escapeString(t) for t in tuple]
     
-    insertion_string = f"INSERT INTO {target_table} ({", ".join(getTableColumns(target_table))}) VALUES ({", ".join(escaped_strings)})"
+    insertion_string = f"INSERT INTO {target_table} ({", ".join(getTableColumns(target_table))}) VALUES ({", ".join(escaped_values)})"
     cur.execute(insertion_string)
     print(insertion_string)
     con.commit()

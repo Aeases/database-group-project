@@ -18,15 +18,17 @@ def getTablePrimaryColumns(table_name):
 def getUserPrimaryColumns(table):
     primary_columns = getTablePrimaryColumns(table)
 
-    user_primary_columns = []
+    search_primary_columns = []
     for key in primary_columns:
-        user_primary_columns.append(getUserInput(f"{key} : "))
+        search_primary_columns.append(getUserInput(f"{key} : "))
 
-    return user_primary_columns
+    return search_primary_columns
 
-def searchForRecord(table, search_primary_keys):
+
+# Takes in array of primary keys e.g. for EMPLOYEE, [employee_id],
+# or for ACTIVITY_LOCATIONS, [location_id, a_id]
+def searchPkToWhereClause(table, search_primary_keys,):
     primary_keys = getTablePrimaryColumns(table)
-
     where_clause = ''
     if (search_primary_keys.__len__() > 1):
         where_clause = ' AND '.join(
@@ -34,7 +36,10 @@ def searchForRecord(table, search_primary_keys):
         )
     else:
         where_clause = f'{primary_keys[0]} = {search_primary_keys[0]}'
-    
+    return where_clause
+
+def searchForRecord(table, search_primary_keys):
+    where_clause = searchPkToWhereClause(table, search_primary_keys)
     cur.execute(f'SELECT * FROM {table} WHERE {where_clause}')
     result = cur.fetchall()
 
@@ -46,6 +51,9 @@ def getUserInput(prompt: str):
     print("\033[0m", end="")
     return res
 
+def escapeString(item):
+    if type(item) is int: return item
+    if type(item) is str: return f"'{item}'"
 
 def getTableUserInput(prompt):
     table_names = getTableNames()
