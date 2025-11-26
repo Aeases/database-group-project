@@ -26,17 +26,19 @@ table_definitions = [
     )""",
 
     """CREATE TABLE E_ASSIGNMENT(
-        a_id INTEGER PRIMARY KEY, 
+        a_id INTEGER, 
         e_id INTEGER,
         FOREIGN KEY (a_id) REFERENCES CMM_ACTIVITY(activity_id),
-        FOREIGN KEY (e_id) REFERENCES EMPLOYEE(employee_id)
+        FOREIGN KEY (e_id) REFERENCES EMPLOYEE(employee_id),
+        PRIMARY KEY (a_id, e_id)
     )""",
 
     """CREATE TABLE C_ASSIGNMENT(
-        a_id INTEGER PRIMARY KEY, 
+        a_id INTEGER, 
         c_id INTEGER,
         FOREIGN KEY (a_id) REFERENCES CMM_ACTIVITY(activity_id),
         FOREIGN KEY (c_id) REFERENCES SUBCONTRACTOR(c_id)
+        PRIMARY KEY (a_id, c_id)
     )""",
     """CREATE TABLE CAMPUS_AREA(
         area_id INTEGER PRIMARY KEY,
@@ -49,7 +51,8 @@ table_definitions = [
         location_id INTEGER, 
         a_id INTEGER,
         FOREIGN KEY (location_id) REFERENCES CAMPUS_AREA(area_id),
-        FOREIGN KEY (a_id) REFERENCES CMM_ACTIVITY(activity_id)
+        FOREIGN KEY (a_id) REFERENCES CMM_ACTIVITY(activity_id),
+        PRIMARY KEY (location_id, a_id)
     )""",
     """CREATE TABLE CHEMICALS(
         chemical_id INTEGER PRIMARY KEY,
@@ -57,16 +60,18 @@ table_definitions = [
         is_harmful BOOLEAN NOT NULL
     )""",
     """CREATE TABLE CHEMICAL_USAGE(
-        chemical_id INTEGER PRIMARY KEY,
+        chemical_id INTEGER,
         a_id INTEGER NOT NULL,
         FOREIGN KEY (chemical_id) REFERENCES CHEMICALS(chemical_id),
-        FOREIGN KEY (a_id) REFERENCES CMM_ACTIVITY(activity_id)
+        FOREIGN KEY (a_id) REFERENCES CMM_ACTIVITY(activity_id),
+        PRIMARY KEY (chemical_id, a_id)
     )""",
     """CREATE TABLE BUILDING_SUPERVISION(
-        building_id INTEGER PRIMARY KEY,
+        building_id INTEGER,
         e_id INTEGER,
         FOREIGN KEY (building_id) REFERENCES CAMPUS_AREA(area_id),
-        FOREIGN KEY (e_id) REFERENCES CMM_ACTIVITY(activity_id)
+        FOREIGN KEY (e_id) REFERENCES CMM_ACTIVITY(activity_id),
+        PRIMARY KEY (building_id, e_id)
     )""",
 ]
 
