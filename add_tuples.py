@@ -1,8 +1,7 @@
 from db import cur, con
 from utils import getUserInput, getTableColumns, getTableUserInput, escapeString
 
-def user_add_tuple():
-    table_choice = getTableUserInput("Table: ")
+def user_add_tuple(table_choice):
     
     numOfInput = int(getUserInput("How many items would you like to insert? #"))
 

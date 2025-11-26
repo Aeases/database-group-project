@@ -1,10 +1,24 @@
 from db import cur, con
-from utils import getUserPrimaryColumns, searchForRecord, escapeString, getTableUserInput, getTableColumns, getUserInput, searchPkToWhereClause
+from utils import getUserPrimaryColumns, getUserBinaryInput, searchForRecord, escapeString, getTableUserInput, getTableColumns, getUserInput, searchPkToWhereClause
 
-def update_tuple():
-    table_choice = getTableUserInput("Table to update: ")
+def user_delete_tuple(table_choice):
+    print("Type in the primary keys of the table you want to delete below:")
+    search_primary_keys = getUserPrimaryColumns(table_choice)
+    table_columns = getTableColumns(table_choice)
 
-    print("\nType in the primary keys of the relation to find below")
+    record_values = searchForRecord(table_choice, search_primary_keys)
+    print("\nDelete this record: (Y/N)")
+    for i in range(0, len(table_columns)):
+        print(f"    {table_columns[i]} : {record_values[i]}")
+    print("\n")
+    where_clause = searchPkToWhereClause(table_choice, search_primary_keys)
+    if (getUserBinaryInput("> ")):
+        con.execute(f'DELETE FROM {table_choice} WHERE {where_clause}')
+    
+
+def user_update_tuple(table_choice):
+
+    print("\nType in the primary keys of the relation to find below:")
     search_primary_keys = getUserPrimaryColumns(table_choice)
 
     # Search for the record's values, and get the column names
@@ -40,9 +54,13 @@ def perform_update(table, search_primary_keys, updated_values):
     print(f"UPDATE {table} SET {set_clause} WHERE {where_clause}")
     con.execute(f"UPDATE {table} SET {set_clause} WHERE {where_clause}")
 
+def perform_deletion(table, search_primary_keys):
+    where_clause = searchPkToWhereClause(table, search_primary_keys)
+
+    con.execute(f"DELETE FROM {table} WHERE {where_clause}")
 
 
 
-
-update_tuple()
+# user_update_tuple()
+user_delete_tuple(getTableUserInput("Table: "))
 con.commit()

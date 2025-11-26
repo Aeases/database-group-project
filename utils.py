@@ -51,6 +51,21 @@ def getUserInput(prompt: str):
     print("\033[0m", end="")
     return res
 
+def getUserBinaryInput(prompt):
+    while True:
+
+        print(f"{prompt}\033[33;4m", end="")
+        res = input("")
+        print("\033[0m", end="")
+
+        if res.lower() in ['y', '1', 'yes', 'true', 't']:
+            return True
+        if res.lower() in ['n', '0', 'no', 'false', 'f']:
+            return False
+        else:
+            print("Invalid Input");
+
+
 def escapeString(item):
     if type(item) is int: return item
     if type(item) is str: return f"'{item}'"
