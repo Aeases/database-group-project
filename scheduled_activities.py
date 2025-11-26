@@ -2,6 +2,7 @@ from db import cur, con
 from utils import getUserInput
 
 def getScheduledActivities():
+    # search for campus maintenance activities
     start_date = getUserInput("Activities starting from date (YYYY-MM-DD): ")
     end_date = getUserInput("Activities ending by date (YYYY-MM-DD): ")
     area_name = getUserInput("Which campus area are you looking for?: ")
@@ -48,6 +49,7 @@ def getScheduledActivities():
         cur.execute(sqlQuery, params)
         allActivities = cur.fetchall()
 
+        # exit if no activities found
         if not allActivities:
             print("\nNo matching activities found.")
             print("Please check your search terms or try a different date range.")
@@ -58,6 +60,7 @@ def getScheduledActivities():
         activity_id_list = [str(activity[0]) for activity in allActivities]
         activity_id_sql = ",".join(activity_id_list)
 
+        # get chemical usage for all activities
         chemicalQuery = f"""
         SELECT
             cu.a_id,
@@ -72,6 +75,7 @@ def getScheduledActivities():
         cur.execute(chemicalQuery)
         allChemicals = cur.fetchall()
 
+        # get assignment information
         assignmentQuery = f"""
         SELECT
             activity.activity_id,
@@ -95,6 +99,7 @@ def getScheduledActivities():
         cur.execute(assignmentQuery)
         allAssignments = cur.fetchall()
 
+        # organize chemical information by activity ID
         chemical_info = {}
         for chem in allChemicals:
             activity_id = chem[0]
@@ -104,11 +109,13 @@ def getScheduledActivities():
                 'name': chem[1],
                 'is_harmful': chem[2]
             })
-        
+
+        # organize assignment information by activity ID
         assignment_info = {}
         for assign in allAssignments:
             assignment_info[assign[0]] = assign[1]
-        
+
+        # display detailed information for each activity
         for activity in allActivities:
             activity_id, activity_desc, start_date, end_date, makes_unusable, category, area_id, area_name, area_type = activity
             print(f"\nActivity ID: {activity_id}")
@@ -116,6 +123,8 @@ def getScheduledActivities():
             print(f"Category: {category}")
             print(f"Location: {area_name} ({area_type})")
             print(f"Time Period: {start_date} to {end_date}")
+
+            # show area usability status
             if makes_unusable:
                 print(f"This area will be unavailable during the activity.")
             else:
@@ -124,6 +133,7 @@ def getScheduledActivities():
             assigned_to = assignment_info.get(activity_id, 'No one assigned yet')
             print(f"Assigned To: {assigned_to}")
 
+            # show chemical information
             chemicals_used = chemical_info.get(activity_id, [])
             if chemicals_used:
                 chemical_names = [chem['name'] for chem in chemicals_used]
