@@ -4,7 +4,7 @@ from updating_tuples import user_update_tuple
 from updating_tuples import user_delete_tuple
 from utils import getUserInput, getTableUserInput
 from sqlite_print import print_cursor
-# from scheduled_activities import getScheduledActivities
+from scheduled_activities import getScheduledActivities
 print("""
 1 | Insert Tuples
 2 | Update Tuples
@@ -39,7 +39,5 @@ match choice:
         print("-- Result --\n")
         print_cursor(cur.execute(user_SQL_query))
     case '5':
-        # getScheduledActivities()
-        print("still to come :)")
-        ...
+        getScheduledActivities()
 con.commit()
