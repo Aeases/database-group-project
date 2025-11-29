@@ -58,7 +58,7 @@ def show_chemical_safety():
     JOIN ACTIVITY_LOCATIONS
         ON area_id = location_id
     JOIN CHEMICAL_USAGE
-        ON a_id = activity_id
+        ON ACTIVITY_LOCATIONS.a_id = CHEMICAL_USAGE.a_id
     JOIN CHEMICALS
         ON CHEMICAL_USAGE.chemical_id = CHEMICALS.chemical_id
     GROUP BY area_name, chemical_name, is_harmful
@@ -120,9 +120,9 @@ def show_employee_workload():
         COUNT(DISTINCT building_id) as "Buildings Supervised"
     FROM EMPLOYEE
     LEFT JOIN E_ASSIGNMENT
-        ON employee_id = e_id
+        ON employee_id = E_ASSIGNMENT.e_id
     LEFT JOIN BUILDING_SUPERVISION
-        ON employee_id = e_id
+        ON employee_id = BUILDING_SUPERVISION.e_id
     GROUP BY employee_id, e_name, level
     ORDER BY
         COUNT(DISTINCT a_id) DESC,
