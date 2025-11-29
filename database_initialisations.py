@@ -68,7 +68,7 @@ table_definitions = [
         building_id INTEGER,
         e_id INTEGER,
         FOREIGN KEY (building_id) REFERENCES CAMPUS_AREA(area_id),
-        FOREIGN KEY (e_id) REFERENCES CMM_ACTIVITY(activity_id),
+        FOREIGN KEY (e_id) REFERENCES EMPLOYEE(employee_id),
         PRIMARY KEY (building_id, e_id)
     )""",
 ]
