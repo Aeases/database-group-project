@@ -11,7 +11,7 @@ table_definitions = [
     
     """CREATE TABLE CMM_ACTIVITY(
         activity_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        activity_desc VARCHAR(100),
+        activity_desc VARCHAR(100) NOT NULL,
         start_date DATE NOT NULL,
         end_date DATE NOT NULL,
         makes_unusable BOOLEAN NOT NULL DEFAULT 0,
@@ -106,7 +106,7 @@ table_rows = [
 """INSERT INTO C_ASSIGNMENT (a_id, c_id) VALUES ('5', '2')""", #5 for speaker repair, 2 for Elon Ma
 
 #CAMPUS_AREA
-"""INSERT INTO CAMPUS_AREA (area_id, area_name, area_type, last_maintenance_date) VALUES ('1', 'R508', 'room', '2025-11-20')""",
+"""INSERT INTO CAMPUS_AREA (area_id, area_name, area_type, last_maintenance_date) VALUES ('1', 'R508', 'room', '2025-11-25')""",
 """INSERT INTO CAMPUS_AREA (area_id, area_name, area_type, last_maintenance_date) VALUES ('2', 'Communal Building', 'building', '2025-11-17')""",
 """INSERT INTO CAMPUS_AREA (area_id, area_name, area_type, last_maintenance_date) VALUES ('3', 'Y3', 'level', '2025-11-18')""",
 
@@ -129,8 +129,5 @@ table_rows = [
 """INSERT INTO CHEMICAL_USAGE (chemical_id, a_id) VALUES ('4', '3')""",
 
 #BUILDING_SUPERVISION
-"""INSERT INTO BUILDING_SUPERVISION (building_id, e_id) VALUES ('1', '4')""", #1 for R508, 4 for quandale fortnite
 """INSERT INTO BUILDING_SUPERVISION (building_id, e_id) VALUES ('2', '3')""", #2 for Communal Building, 3 for garfield rizz
-"""INSERT INTO BUILDING_SUPERVISION (building_id, e_id) VALUES ('3', '5')"""  #3 for Y3, 5 for usagi rabbit
-
 ]
