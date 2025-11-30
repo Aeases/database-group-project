@@ -1,19 +1,29 @@
 from db import cur, con
 from utils import getUserInput
 
+class Colors:
+    RED = '\033[91m'
+    GREEN = '\033[92m'
+    BLUE = '\033[94m'
+    PEACH = '\033[38;5;223m'
+    LAVENDER = '\033[38;5;183m'
+    MINT = '\033[38;5;158m'
+    BOLD = '\033[1m'
+    RESET = '\033[0m'
+
 def getScheduledActivities():
     # search for campus maintenance activities
-    print("\n🔍 FIND SCHEDULED ACTIVITIES")
-    print("="*50)
+    print(f"\n{Colors.BLUE}{Colors.BOLD}FIND SCHEDULED ACTIVITIES{Colors.RESET}")
+    print(f"{Colors.BLUE}{'='*50}{Colors.RESET}")
     start_date = getUserInput("Activities starting from date (YYYY-MM-DD): ")
     end_date = getUserInput("Activities ending by date (YYYY-MM-DD): ")
     area_name = getUserInput("Which campus area are you looking for? (Press Enter for all): ")
  
-    print("\n📁 Activity Categories:")
+    print("\nActivity Categories:")
     print("     Press Enter for ALL categories")
-    print("     - cleaning: Daily cleaning activities")
-    print("     - repair: Fixing ageing or weather-related issues")
-    print("     - renovation: Major upgrades and changes")
+    print(f"     {Colors.MINT}- cleaning: Daily cleaning activities{Colors.RESET}")
+    print(f"     {Colors.PEACH}- repair: Fixing ageing or weather-related issues{Colors.RESET}")
+    print(f"     {Colors.LAVENDER}- renovation: Major upgrades and changes{Colors.RESET}")
     category_filter = getUserInput("Filter by category (optional): ")
 
     conditions = []
@@ -59,14 +69,14 @@ def getScheduledActivities():
     sqlQuery += " ORDER BY activity.start_date, activity.end_date, area.area_name"
 
     try:
-        print("\n⏳ Searching for scheduled activities...")
+        print(f"\n{Colors.BLUE}Searching for scheduled activities...{Colors.RESET}")
         cur.execute(sqlQuery, params)
         allActivities = cur.fetchall()
 
         # exit if no activities found
         if not allActivities:
             print("\n🚫 No matching activities found.")
-            print("💡 Please check your search terms or try a different date range.")
+            print("Please check your search terms or try a different date range.")
             return
         
         category_count = {}
@@ -84,8 +94,8 @@ def getScheduledActivities():
         print(f"\nWe found {len(allActivities)} scheduled activity(s) that match your search.")
         if category_count:
             category_summary = " | ".join([f"{count} {category_desc[cat]}" for cat, count in category_count.items()])
-            print(f"📊 Breakdown: {category_summary}")
-        print("="*60)
+            print(f"Breakdown: {category_summary}")
+        print(f"{Colors.BLUE}{'='*60}{Colors.RESET}")
        
         activity_id_list = [str(activity[0]) for activity in allActivities if len(activity) > 0]
         if activity_id_list:
@@ -166,39 +176,27 @@ def getScheduledActivities():
         for i, activity in enumerate(allActivities, 1):
             try:
                 if len(activity) < 9:
-                    print(f"⚠️ Activity {i} has incomplete data (only {len(activity)} columns), skipping...")
+                    print(f"Activity {i} has incomplete data (only {len(activity)} columns), skipping...")
                     continue
 
                 activity_id, activity_desc, start_date, end_date, makes_unusable, category, area_id, area_name, area_type = activity
 
-                category_details = {
-                    'cleaning': {'icon': '🧹', 'label': 'DAILY CLEANING'},
-                    'repair': {'icon': '🛠️ ', 'label': 'REPAIR & MAINTENANCE'},
-                    'renovation': {'icon': '🏗️ ', 'label': 'RENOVATION PROJECT'}
-                }
-                cat_info = category_details.get(category, {'icon': '📋', 'label': category.upper()})
-            
-                print(f"\n{cat_info['icon']} ACTIVITY #{i} - {cat_info['label']}")
-                print("="*50)
-                print(f"🔢 Activity ID: {activity_id}")
-                print(f"📝 Activity Description: {activity_desc}")
-                print(f"📍 Location: {area_name} ({area_type})")
-                print(f"📅 Time Period: {start_date} to {end_date}")
+                print(f"\n{Colors.BLUE}{Colors.BOLD}ACTIVITY #{i} - {category.upper()}{Colors.RESET}")
+                print(f"{Colors.BLUE}{'='*50}{Colors.RESET}")
+                print(f"Activity ID: {activity_id}")
+                print(f"Activity Description: {activity_desc}")
+                print(f"Location: {area_name} ({area_type})")
+                print(f"Time Period: {start_date} to {end_date}")
 
                 # show area usability status
                 if makes_unusable:
-                    print(f"🚫 AREA STATUS: This area will be UNAVAILABLE during the activity.")
-                    if category == 'renovation':
-                        print("    ⚠️ Renovation project - extended closure expected")
-                    elif category == 'repair':
-                        print("    🔧 Repair work - temporary closure for safety")
+                    print(f"🚫{Colors.RED}{Colors.BOLD}AREA STATUS: This area will be UNAVAILABLE during the activity.{Colors.RESET}")
                 else:
-                    print(f"✅ AREA STATUS: Area remains USABLE during the activity.")
+                    print(f"✅{Colors.GREEN}{Colors.BOLD}AREA STATUS: Area remains USABLE during the activity.{Colors.RESET}")
 
                 # show assignment information
                 assignment = assignment_info.get(activity_id, {'assigned_to': 'No one assigned yet', 'type': 'Unassigned'})
-                assignee_icon = "👤" if assignment['type'] == 'Employee' else "🏢" if assignment['type'] == 'Subcontractor' else "❓"
-                print(f"{assignee_icon} Assigned To: {assignment['assigned_to']} ({assignment['type']})")
+                print(f"Assigned To: {assignment['assigned_to']} ({assignment['type']})")
 
                 # show chemical information
                 chemicals_used = chemical_info.get(activity_id, [])
@@ -206,29 +204,20 @@ def getScheduledActivities():
                     chemical_names = [chem['name'] for chem in chemicals_used]
                     harmful_chems = [chem for chem in chemicals_used if chem['is_harmful']]
                 
-                    print(f"🧪 Chemicals: {', '.join(chemical_names)}")
+                    print(f"Chemicals: {', '.join(chemical_names)}")
                 
                     if harmful_chems:
                         harmful_names = [chem['name'] for chem in harmful_chems]
-                        print(f"⚠️  WARNING: Harmful chemicals used: {', '.join(harmful_names)}")
-                    
-                        if category == 'cleaning':
-                            print("   🧤 Use protective equipment during cleaning")
-                        elif category == 'renovation':
-                            print("   🏗️ Construction area - restricted access required")
-                        else:
-                            print("   Please ensure proper safety measures are taken!")
-                
+                        print(f"{Colors.RED}{Colors.BOLD}WARNING: Harmful chemicals used: {', '.join(harmful_names)}{Colors.RESET}")               
                     else:
-                        print(f"✅ SAFETY: All materials used are safe.")
+                        print(f"✅{Colors.GREEN}{Colors.BOLD}SAFETY: All materials used are safe.{Colors.RESET}")
                 else:
-                    print(f"🧪 Chemicals: No chemicals used in this activity.")
+                    print(f"Chemicals: No chemicals used in this activity.")
             
-                print("-"*50)
+                print(f"{Colors.BLUE}{'='*50}{Colors.RESET}")
             
             except Exception as e:
                 print(f"❌ Error displaying activity {i}: {e}")
-                print(f"Problematic activity data: {activity}")
                 continue
             
         # summary statistics
@@ -241,7 +230,7 @@ def getScheduledActivities():
         repair_count = sum(1 for activity in allActivities if activity[5] == 'repair')
         renovation_count = sum(1 for activity in allActivities if activity[5] == 'renovation')
 
-        print(f"\n📊 SEARCH SUMMARY:")
+        print(f"\n{Colors.BLUE}{Colors.BOLD}SEARCH SUMMARY:{Colors.RESET}")
         print(f"    - Total activities found: {len(allActivities)}")
         print(f"    - Cleaning activities: {cleaning_count}")
         print(f"    - Repair & Maintenance: {repair_count}")
@@ -250,12 +239,12 @@ def getScheduledActivities():
         print(f"    - Activities making areas unavailable: {unavailable_count}")
 
         if harmful_count > 0:
-            print(f"\n💡 Safety Notice: {harmful_count} activity(s) use harmful chemicals")
-            print("   Please review safety protocols for these activities!")
+            print(f"\n{Colors.RED}{Colors.BOLD}Safety Notice: {harmful_count} activity(s) use harmful chemicals{Colors.RESET}")
+            print(f"{Colors.PEACH}Please review safety protocols for these activities!{Colors.RESET}")
 
         if renovation_count > 0:
-            print(f"🏗️  Renovation Notice: {renovation_count} major renovation project(s) found")
+            print(f"{Colors.LAVENDER}Renovation Notice: {renovation_count} major renovation project(s) found{Colors.RESET}")
 
     except Exception as error:
         print(f"❌ Error searching activities: {error}")
-        print("💡 Please check your date format (YYYY-MM-DD) and try again.")
+        print("Please check your date format (YYYY-MM-DD) and try again.")
