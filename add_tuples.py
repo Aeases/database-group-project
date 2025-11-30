@@ -1,6 +1,7 @@
 from db import cur, con
 from utils import getUserInput, getTableColumns, getTableUserInput, escapeString
 from validations import GeneralValidator, CampusRules, EmployeeLimitValidator
+from auth import auth_system
 
 def user_add_tuple(table_choice):
     if not auth_system.has_permission('executive officer'):
