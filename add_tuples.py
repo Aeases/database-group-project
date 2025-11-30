@@ -164,6 +164,8 @@ def get_validated_columns(table):
     all_items = []
 
     for column in all_columns:
+        if table == 'EMPLOYEE' and column == 'employee_id':
+            continue
         while True:
             try:
                 value = getUserInput(f"{column} <- ")
