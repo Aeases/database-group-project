@@ -6,12 +6,12 @@ import sys
 def print_cursor(
     cursor: sqlite3.Cursor,
     *,
-    first: int = 5,
-    last: int = 5,
+    first: int = 1000,
+    last: int = 0,
     show_header: bool = True,
     show_count: bool = True,
     total_width: int = 80,
-    max_width: int = 15,
+    max_width: int = 25,
     stream = sys.stdout,
 ):
     # name of each column
