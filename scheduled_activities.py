@@ -77,17 +77,21 @@ def getScheduledActivities():
         }
 
         for activity in allActivities:
-            category = activity[5]
-            category_count[category] = category_count.get(category, 0) + 1
+            if len(activity) > 5:
+                category = activity[5]
+                category_count[category] = category_count.get(category, 0) + 1
 
         print(f"\nWe found {len(allActivities)} scheduled activity(s) that match your search.")
         if category_count:
-            category_summary = " | ".join([f"{count}{category_desc[cat]}" for cat, count in category_count.items()])
-            print(f"    📊 Breakdown: {category_summary}")
+            category_summary = " | ".join([f"{count} {category_desc[cat]}" for cat, count in category_count.items()])
+            print(f"📊 Breakdown: {category_summary}")
         print("="*60)
        
-        activity_id_list = [str(activity[0]) for activity in allActivities]
-        activity_id_sql = ",".join(activity_id_list)
+        activity_id_list = [str(activity[0]) for activity in allActivities if len(activity) > 0]
+        if activity_id_list:
+            activity_id_sql = ",".join(activity_id_list)
+        else:
+            activity_id_sql = "NULL"
 
         # get chemical usage for all activities
         chemicalQuery = f"""
@@ -112,7 +116,12 @@ def getScheduledActivities():
                 e.e_name, 
                 s.c_name, 
                 'No one assigned yet'
-            ) as assigned_to
+            ) as assigned_to,
+            CASE
+                WHEN e.e_name IS NOT NULL THEN 'Employee'
+                WHEN s.c_name IS NOT NULL THEN 'Subcontractor'
+                ELSE 'Unassigned'
+            END as assignee_type
         FROM CMM_ACTIVITY activity
         LEFT JOIN E_ASSIGNMENT ea 
             ON activity.activity_id = ea.a_id
@@ -142,74 +151,90 @@ def getScheduledActivities():
         # organize assignment information by activity ID
         assignment_info = {}
         for assign in allAssignments:
-            assignment_info[assign[0]] = {
-                'assigned_to': assign[1],
-                'type': assign[2]
-            }
+            if len(assign) >= 3:
+                assignment_info[assign[0]] = {
+                    'assigned_to': assign[1],
+                    'type': assign[2]
+                }
+            else:
+                assignment_info[assign[0]] = {
+                    'assigned_to': 'Unknown',
+                    'type': 'Unassigned'
+                }
 
         # display detailed information for each activity
         for i, activity in enumerate(allActivities, 1):
-            activity_id, activity_desc, start_date, end_date, makes_unusable, category, area_id, area_name, area_type = activity
+            try:
+                if len(activity) < 9:
+                    print(f"⚠️ Activity {i} has incomplete data (only {len(activity)} columns), skipping...")
+                    continue
+
+                activity_id, activity_desc, start_date, end_date, makes_unusable, category, area_id, area_name, area_type = activity
+
+                category_details = {
+                    'cleaning': {'icon': '🧹', 'label': 'DAILY CLEANING'},
+                    'repair': {'icon': '🛠️ ', 'label': 'REPAIR & MAINTENANCE'},
+                    'renovation': {'icon': '🏗️ ', 'label': 'RENOVATION PROJECT'}
+                }
+                cat_info = category_details.get(category, {'icon': '📋', 'label': category.upper()})
             
-            category_details = {
-                'cleaning': {'icon': '🧹', 'label': 'DAILY CLEANING'},
-                'repair': {'icon': '🛠️', 'label': 'REPAIR & MAINTENANCE'},
-                'renovation': {'icon': '🏗️', 'label': 'RENOVATION PROJECT'}
-            }
-            cat_info = category_details.get(category, {'icon': '📋', 'label': category.upper()})
-            
-            print(f"\n{cat_info['icon']} ACTIVITY #{i} - {cat_info['label']}")
-            print("="*50)
-            print(f"🔢 Activity ID: {activity_id}")
-            print(f"📝 Activity Description: {activity_desc}")
-            print(f"📍 Location: {area_name} ({area_type})")
-            print(f"📅 Time Period: {start_date} to {end_date}")
+                print(f"\n{cat_info['icon']} ACTIVITY #{i} - {cat_info['label']}")
+                print("="*50)
+                print(f"🔢 Activity ID: {activity_id}")
+                print(f"📝 Activity Description: {activity_desc}")
+                print(f"📍 Location: {area_name} ({area_type})")
+                print(f"📅 Time Period: {start_date} to {end_date}")
 
-            # show area usability status
-            if makes_unusable:
-                print(f"🚫 AREA STATUS: This area will be UNAVAILABLE during the activity.")
-                if category == 'renovation':
-                    print("    ⚠️ Renovation project - extended closure expected")
-                elif category == 'repair':
-                    print("    🔧 Repair work - temporary closure for safety")
-            else:
-                print(f"✅ AREA STATUS: Area remains USABLE during the activity.")
-
-            # show assignment information
-            assignment = assignment_info.get(activity_id, {'assigned_to': 'No one assigned yet', 'type': 'Unassigned'})
-            assignee_icon = "👤" if assignment['type'] == 'Employee' else "🏢" if assignment['type'] == 'Subcontractor' else "❓"
-            print(f"{assignee_icon} Assigned To: {assignment['assigned_to']} ({assignment['type']})")
-
-            # show chemical information
-            chemicals_used = chemical_info.get(activity_id, [])
-            if chemicals_used:
-                chemical_names = [chem['name'] for chem in chemicals_used]
-                harmful_chems = [chem for chem in chemicals_used if chem['is_harmful']]
-                
-                print(f"🧪 Chemicals: {', '.join(chemical_names)}")
-                
-                if harmful_chems:
-                    harmful_names = [chem['name'] for chem in harmful_chems]
-                    print(f"⚠️  WARNING: Harmful chemicals used: {', '.join(harmful_names)}")
-                    
-                    if category == 'cleaning':
-                        print("   🧤 Use protective equipment during cleaning")
-                    elif category == 'renovation':
-                        print("   🏗️ Construction area - restricted access required")
-                    else:
-                        print("   Please ensure proper safety measures are taken!")
-                
+                # show area usability status
+                if makes_unusable:
+                    print(f"🚫 AREA STATUS: This area will be UNAVAILABLE during the activity.")
+                    if category == 'renovation':
+                        print("    ⚠️ Renovation project - extended closure expected")
+                    elif category == 'repair':
+                        print("    🔧 Repair work - temporary closure for safety")
                 else:
-                    print(f"✅  SAFETY: All materials used are safe.")
-            else:
-                print(f"🧪 Chemicals: No chemicals used in this activity.")
+                    print(f"✅ AREA STATUS: Area remains USABLE during the activity.")
+
+                # show assignment information
+                assignment = assignment_info.get(activity_id, {'assigned_to': 'No one assigned yet', 'type': 'Unassigned'})
+                assignee_icon = "👤" if assignment['type'] == 'Employee' else "🏢" if assignment['type'] == 'Subcontractor' else "❓"
+                print(f"{assignee_icon} Assigned To: {assignment['assigned_to']} ({assignment['type']})")
+
+                # show chemical information
+                chemicals_used = chemical_info.get(activity_id, [])
+                if chemicals_used:
+                    chemical_names = [chem['name'] for chem in chemicals_used]
+                    harmful_chems = [chem for chem in chemicals_used if chem['is_harmful']]
+                
+                    print(f"🧪 Chemicals: {', '.join(chemical_names)}")
+                
+                    if harmful_chems:
+                        harmful_names = [chem['name'] for chem in harmful_chems]
+                        print(f"⚠️  WARNING: Harmful chemicals used: {', '.join(harmful_names)}")
+                    
+                        if category == 'cleaning':
+                            print("   🧤 Use protective equipment during cleaning")
+                        elif category == 'renovation':
+                            print("   🏗️ Construction area - restricted access required")
+                        else:
+                            print("   Please ensure proper safety measures are taken!")
+                
+                    else:
+                        print(f"✅ SAFETY: All materials used are safe.")
+                else:
+                    print(f"🧪 Chemicals: No chemicals used in this activity.")
             
-            print("-"*50)
+                print("-"*50)
+            
+            except Exception as e:
+                print(f"❌ Error displaying activity {i}: {e}")
+                print(f"Problematic activity data: {activity}")
+                continue
             
         # summary statistics
         harmful_count = sum(1 for activity in allActivities
-                            if any(chem['is_harmful'] for chem in chemical_info.get(activity[0], [])))
-        unavailable_count = sum(1 for activity in allActivities if activity[4])
+                            if len(activity) > 0 and any(chem['is_harmful'] for chem in chemical_info.get(activity[0], [])))
+        unavailable_count = sum(1 for activity in allActivities if len(activity) > 4 and activity[4])
 
         # count by category for detailed summary
         cleaning_count = sum(1 for activity in allActivities if activity[5] == 'cleaning')
