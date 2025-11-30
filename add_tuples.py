@@ -3,6 +3,10 @@ from utils import getUserInput, getTableColumns, getTableUserInput, escapeString
 from validations import GeneralValidator, CampusRules, EmployeeLimitValidator
 
 def user_add_tuple(table_choice):
+    if not auth_system.has_permission('executive officer'):
+        print("Error: Only executive officers can add tuples.")
+        return
+        
     numOfInput = int(getUserInput("How many items would you like to insert? #"))
     print(f"\nInserting into {table_choice}\n")
 
@@ -37,6 +41,10 @@ def user_add_tuple(table_choice):
     print(f"\nSuccessfully added {success_count} out of {numOfInput} records.")
 
 def set_based_insertion(table_choice):
+    if not auth_system.has_permission('executive officer'):
+        print("Error: Only executive officers can perform set-based insertion.")
+        return
+
     print(f"\n=== Set-based Insertion for {table_choice} ===")
     print("Enter multiple rows at once using CSV format")
     print("Format: value1,value2,value3,... (one row per line)")
