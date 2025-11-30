@@ -16,6 +16,7 @@ Make sure to backup your database.db file if you have important data!
 import os
 import sys
 import sqlite3
+import time
 
 # Add parent directory to path to import database_initialisations
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -39,35 +40,70 @@ def load_test_data():
         print(f"   Expected location: {test_data_sql}")
         return False
     
-    # Backup existing database if it exists
+    # Remove existing database if it exists (handles file in use)
     if os.path.exists(database_path):
-        if os.path.exists(backup_path):
+        try:
+            # Try to remove the database file directly
+            os.remove(database_path)
+            print("🗑️  Removed existing database file")
+        except PermissionError:
+            print("❌ Error: Database file is currently in use by another process.")
+            print("💡 Please close all applications that might be using the database:")
+            print("   - Close any running Python scripts")
+            print("   - Close any database viewers")
+            print("   - Make sure main.py is not running")
+            return False
+    
+    # Remove backup if it exists
+    if os.path.exists(backup_path):
+        try:
             os.remove(backup_path)
-        os.rename(database_path, backup_path)
-        print(f"📦 Backed up existing database to {backup_path}")
+        except:
+            pass  # Ignore errors removing backup
     
     # Create new database connection
-    con = sqlite3.connect(database_path)
-    cur = con.cursor()
+    try:
+        con = sqlite3.connect(database_path)
+        cur = con.cursor()
+    except sqlite3.Error as e:
+        print(f"❌ Error creating database connection: {e}")
+        return False
     
     try:
         print("🔨 Creating database tables...")
         # Create all tables
         for table in table_definitions:
-            cur.execute(table)
+            try:
+                cur.execute(table)
+            except sqlite3.Error as e:
+                print(f"❌ Error creating table: {e}")
+                return False
         con.commit()
         print("✅ Tables created successfully")
         
         print("\n📥 Loading test data from test_data.sql...")
         
+        # Check if SQL file exists and has content
+        if not os.path.exists(test_data_sql):
+            print(f"❌ Error: {test_data_sql} not found!")
+            return False
+        
         # Read and execute SQL file
         with open(test_data_sql, "r", encoding="utf-8") as f:
             sql_script = f.read()
         
+        if not sql_script.strip():
+            print("❌ Error: test_data.sql file is empty!")
+            return False
+        
         # Use executescript which handles multiple statements better
-        cur.executescript(sql_script)
-        con.commit()
-        print("✅ Test data loaded successfully!")
+        try:
+            cur.executescript(sql_script)
+            con.commit()
+            print("✅ Test data loaded successfully!")
+        except sqlite3.Error as e:
+            print(f"❌ SQL Error executing script: {e}")
+            return False
         
         # Verify data was loaded
         print("\n🔍 Verifying loaded data...")
@@ -96,13 +132,8 @@ def load_test_data():
         
         return True
         
-    except sqlite3.Error as e:
-        print(f"\n❌ SQL Error loading test data: {e}")
-        con.rollback()
-        return False
     except Exception as e:
-        print(f"\n❌ Error loading test data: {e}")
-        con.rollback()
+        print(f"\n❌ Unexpected error: {e}")
         return False
     finally:
         con.close()
