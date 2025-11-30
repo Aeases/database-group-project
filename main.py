@@ -59,7 +59,7 @@ def process_cmd():
         if choice in valid_choices:
             break
         else:
-            print(f"Invalid Input. Please choose 1-{total_menu_items}")
+            print(f"❌ Invalid Input. Please choose 1-{total_menu_items}")
 
     # Map choice numbers to actual functions
     menu_mapping = {}
@@ -94,49 +94,55 @@ def process_cmd():
     if action in ['insert', 'set_insert', 'update', 'delete']:
         table_choice = getTableUserInput("Table: ")
 
-    match action:
-        case 'insert':
-            user_add_tuple(table_choice)
-        case 'set_insert':
-            set_based_insertion(table_choice)
-        case 'update':
-            user_update_tuple(table_choice)
-        case 'delete':
-            user_delete_tuple(table_choice)
-        case 'sql':
-            try:
-                user_SQL_query = getUserInput("SQL QUERY: ", ansiStart='')
-                print("-- Result --\n")
-                print_cursor(cur.execute(user_SQL_query))
-            except Exception as e:
-                print(f"SQL Error: {e}")
-                con.rollback()
-        case 'schedule':
-            getScheduledActivities()
-        case 'reports':
-            generate_reports()
-        case 'logout':
-            auth_system.logout()
-            return 'logout'
-        case 'exit':
-            print("Thank you for using Campus Maintenance Management System. Goodbye!")
-            sys.exit(0)
+    try:
+        match action:
+            case 'insert':
+                user_add_tuple(table_choice)
+            case 'set_insert':
+                set_based_insertion(table_choice)
+            case 'update':
+                user_update_tuple(table_choice)
+            case 'delete':
+                user_delete_tuple(table_choice)
+            case 'sql':
+                try:
+                    user_SQL_query = getUserInput("SQL QUERY: ", ansiStart='')
+                    print("-- Result --\n")
+                    print_cursor(cur.execute(user_SQL_query))
+                except Exception as e:
+                    print(f"❌ SQL Error: {e}")
+                    con.rollback()
+            case 'schedule':
+                getScheduledActivities()
+            case 'reports':
+                generate_reports()
+            case 'logout':
+                auth_system.logout()
+                return 'logout'
+            case 'exit':
+                print("✅ Thank you for using Campus Maintenance Management System. Goodbye!")
+                sys.exit(0)
     
-    con.commit()
-    return 'continue'
+        con.commit()
+        return 'continue'
+
+    except Exception as e:
+        print(f"❌ Unexpected error: {e}")
+        con.rollback()
+        return 'continue'
 
 def login_loop():
     while True:
         if auth_system.login():
             break
         else:
-            retry = getUserInput("Login failed. Try again? (y/n): ")
+            retry = getUserInput("❌ Login failed. Try again? (y/n): ")
             if retry.lower() not in ['y', 'yes']:
-                print("Goodbye!")
+                print("👋🏻 Goodbye!")
                 sys.exit(0)
 
 if __name__ == "__main__":
-    print("Welcome to Campus Maintenance Management System!")
+    print("🚀 Welcome to Campus Maintenance Management System!")
     
     while True:
         login_loop()
