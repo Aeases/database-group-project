@@ -36,7 +36,7 @@ def load_test_data():
     
     # Check if test_data.sql exists
     if not os.path.exists(test_data_sql):
-        print("❌ Error: test_data.sql file not found!")
+        print("Error: test_data.sql file not found!")
         print(f"   Expected location: {test_data_sql}")
         return False
     
@@ -45,10 +45,10 @@ def load_test_data():
         try:
             # Try to remove the database file directly
             os.remove(database_path)
-            print("🗑️  Removed existing database file")
+            print("Removed existing database file")
         except PermissionError:
-            print("❌ Error: Database file is currently in use by another process.")
-            print("💡 Please close all applications that might be using the database:")
+            print("Error: Database file is currently in use by another process.")
+            print("   Please close all applications that might be using the database:")
             print("   - Close any running Python scripts")
             print("   - Close any database viewers")
             print("   - Make sure main.py is not running")
@@ -66,26 +66,26 @@ def load_test_data():
         con = sqlite3.connect(database_path)
         cur = con.cursor()
     except sqlite3.Error as e:
-        print(f"❌ Error creating database connection: {e}")
+        print(f"Error creating database connection: {e}")
         return False
     
     try:
-        print("🔨 Creating database tables...")
+        print("Creating database tables...")
         # Create all tables
         for table in table_definitions:
             try:
                 cur.execute(table)
             except sqlite3.Error as e:
-                print(f"❌ Error creating table: {e}")
+                print(f"Error creating table: {e}")
                 return False
         con.commit()
-        print("✅ Tables created successfully")
+        print("Tables created successfully")
         
-        print("\n📥 Loading test data from test_data.sql...")
+        print("\nLoading test data from test_data.sql...")
         
         # Check if SQL file exists and has content
         if not os.path.exists(test_data_sql):
-            print(f"❌ Error: {test_data_sql} not found!")
+            print(f"Error: {test_data_sql} not found!")
             return False
         
         # Read and execute SQL file
@@ -93,27 +93,27 @@ def load_test_data():
             sql_script = f.read()
         
         if not sql_script.strip():
-            print("❌ Error: test_data.sql file is empty!")
+            print("Error: test_data.sql file is empty!")
             return False
         
         # Use executescript which handles multiple statements better
         try:
             cur.executescript(sql_script)
             con.commit()
-            print("✅ Test data loaded successfully!")
+            print("Test data loaded successfully!")
         except sqlite3.Error as e:
-            print(f"❌ SQL Error executing script: {e}")
+            print(f"SQL Error executing script: {e}")
             return False
         
         # Verify data was loaded
-        print("\n🔍 Verifying loaded data...")
+        print("\nVerifying loaded data...")
         tables_to_check = [
             'EMPLOYEE', 'CMM_ACTIVITY', 'CAMPUS_AREA', 'SUBCONTRACTOR',
             'E_ASSIGNMENT', 'C_ASSIGNMENT', 'ACTIVITY_LOCATIONS',
             'CHEMICALS', 'CHEMICAL_USAGE', 'BUILDING_SUPERVISION'
         ]
         
-        print("\n📊 Data Summary:")
+        print("\nData Summary:")
         print("-" * 50)
         total_records = 0
         for table in tables_to_check:
@@ -127,13 +127,13 @@ def load_test_data():
         
         print("-" * 50)
         print(f"   {'TOTAL':25s}: {total_records:3d} records")
-        print("\n✅ Test data loaded successfully!")
-        print("🚀 You can now run: python main.py")
+        print("\nTest data loaded successfully!")
+        print("You can now run: python main.py")
         
         return True
         
     except Exception as e:
-        print(f"\n❌ Unexpected error: {e}")
+        print(f"\nUnexpected error: {e}")
         return False
     finally:
         con.close()
@@ -145,14 +145,14 @@ if __name__ == "__main__":
     print()
     
     # Confirm before proceeding
-    response = input("⚠️  This will DELETE your existing database and create a new one with test data.\n   Continue? (yes/no): ")
+    response = input("This will DELETE your existing database and create a new one with test data.\n   Continue? (yes/no): ")
     
     if response.lower() in ['yes', 'y']:
         print()
         success = load_test_data()
         if not success:
-            print("\n❌ Failed to load test data. Please check the error messages above.")
+            print("\nFailed to load test data. Please check the error messages above.")
             sys.exit(1)
     else:
-        print("\n❌ Operation cancelled.")
+        print("\nOperation cancelled.")
         sys.exit(0)
