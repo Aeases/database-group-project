@@ -103,12 +103,12 @@ table_rows = [
 """INSERT INTO C_ASSIGNMENT (a_id, c_id) VALUES ('5', '2')""", #5 for speaker repair, 2 for Elon Ma
 
 #CAMPUS_AREA
-"""INSERT INTO CAMPUS_AREA (area_id, area_name, area_type, last_maintenance_date) VALUES ('1', 'R508', 'room', '2025-11-25')""",
+"""INSERT INTO CAMPUS_AREA (area_id, area_name, area_type, last_maintenance_date) VALUES ('1', 'R305', 'room', '2025-11-25')""",
 """INSERT INTO CAMPUS_AREA (area_id, area_name, area_type, last_maintenance_date) VALUES ('2', 'Communal Building', 'building', '2025-11-17')""",
 """INSERT INTO CAMPUS_AREA (area_id, area_name, area_type, last_maintenance_date) VALUES ('3', 'Y3', 'level', '2025-11-18')""",
 
 #ACTIVITY_LOCATIONS | location id > Campus Area
-"""INSERT INTO ACTIVITY_LOCATIONS (location_id, a_id) VALUES ('1', '2')""", # R508 for floor cleaning
+"""INSERT INTO ACTIVITY_LOCATIONS (location_id, a_id) VALUES ('1', '2')""", # R305 for floor cleaning
 """INSERT INTO ACTIVITY_LOCATIONS (location_id, a_id) VALUES ('2', '1')""", # Communal Building for window cleaning
 """INSERT INTO ACTIVITY_LOCATIONS (location_id, a_id) VALUES ('2', '3')""", # Communal Building for door repair
 """INSERT INTO ACTIVITY_LOCATIONS (location_id, a_id) VALUES ('3', '4')""", # Y3 for leak repair
