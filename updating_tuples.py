@@ -1,5 +1,6 @@
 from db import cur, con
 from utils import getUserPrimaryColumns, getUserBinaryInput, searchForRecord, escapeString, getTableUserInput, getTableColumns, getUserInput, searchPkToWhereClause
+from auth import auth_system
 
 def user_delete_tuple(table_choice):
     if not auth_system.has_permission('mid-level manager'):
