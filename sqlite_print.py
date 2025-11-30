@@ -10,8 +10,8 @@ def print_cursor(
     last: int = 0,
     show_header: bool = True,
     show_count: bool = True,
-    total_width: int = 80,
-    max_width: int = 50,
+    total_width: int = 200,
+    max_width: int = 200,
     stream = sys.stdout,
 ):
     # name of each column
