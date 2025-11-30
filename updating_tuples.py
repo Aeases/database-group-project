@@ -2,6 +2,10 @@ from db import cur, con
 from utils import getUserPrimaryColumns, getUserBinaryInput, searchForRecord, escapeString, getTableUserInput, getTableColumns, getUserInput, searchPkToWhereClause
 
 def user_delete_tuple(table_choice):
+    if not auth_system.has_permission('mid-level manager'):
+        print("Error: Only mid-level managers and above can delete tuples.")
+        return
+        
     print("Type in the primary keys of the table you want to delete below:")
     search_primary_keys = getUserPrimaryColumns(table_choice)
     table_columns = getTableColumns(table_choice)
@@ -17,7 +21,10 @@ def user_delete_tuple(table_choice):
     
 
 def user_update_tuple(table_choice):
-
+    if not auth_system.has_permission('mid-level manager'):
+        print("Error: Only mid-level managers and above can update tuples.")
+        return
+        
     print("\nType in the primary keys of the relation to find below:")
     search_primary_keys = getUserPrimaryColumns(table_choice)
 
