@@ -11,7 +11,7 @@ def print_cursor(
     show_header: bool = True,
     show_count: bool = True,
     total_width: int = 80,
-    max_width: int = 25,
+    max_width: int = 50,
     stream = sys.stdout,
 ):
     # name of each column
