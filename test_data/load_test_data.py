@@ -64,21 +64,10 @@ def load_test_data():
         with open(test_data_sql, "r", encoding="utf-8") as f:
             sql_script = f.read()
         
-        # Split by semicolon and execute each statement
-        statements = [stmt.strip() for stmt in sql_script.split(';') if stmt.strip() and not stmt.strip().startswith('--')]
-        
-        executed_count = 0
-        for statement in statements:
-            if statement and not statement.startswith('--'):
-                try:
-                    cur.execute(statement)
-                    executed_count += 1
-                except sqlite3.Error as e:
-                    print(f"⚠️  Warning: Error executing statement: {e}")
-                    print(f"   Statement: {statement[:100]}...")
-        
+        # Use executescript which handles multiple statements better
+        cur.executescript(sql_script)
         con.commit()
-        print(f"✅ Successfully executed {executed_count} SQL statements")
+        print("✅ Test data loaded successfully!")
         
         # Verify data was loaded
         print("\n🔍 Verifying loaded data...")
@@ -90,20 +79,27 @@ def load_test_data():
         
         print("\n📊 Data Summary:")
         print("-" * 50)
+        total_records = 0
         for table in tables_to_check:
             try:
                 cur.execute(f"SELECT COUNT(*) FROM {table}")
                 count = cur.fetchone()[0]
+                total_records += count
                 print(f"   {table:25s}: {count:3d} records")
             except sqlite3.Error as e:
                 print(f"   {table:25s}: Error - {e}")
         
         print("-" * 50)
+        print(f"   {'TOTAL':25s}: {total_records:3d} records")
         print("\n✅ Test data loaded successfully!")
         print("🚀 You can now run: python main.py")
         
         return True
         
+    except sqlite3.Error as e:
+        print(f"\n❌ SQL Error loading test data: {e}")
+        con.rollback()
+        return False
     except Exception as e:
         print(f"\n❌ Error loading test data: {e}")
         con.rollback()
@@ -125,8 +121,7 @@ if __name__ == "__main__":
         success = load_test_data()
         if not success:
             print("\n❌ Failed to load test data. Please check the error messages above.")
-            exit(1)
+            sys.exit(1)
     else:
         print("\n❌ Operation cancelled.")
-        exit(0)
-
+        sys.exit(0)
