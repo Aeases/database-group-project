@@ -70,9 +70,6 @@ table_definitions = [
         e_id INTEGER NOT NULL UNIQUE,
         FOREIGN KEY (building_id) REFERENCES CAMPUS_AREA(area_id) ON DELETE RESTRICT,
         FOREIGN KEY (e_id) REFERENCES EMPLOYEE(employee_id) ON DELETE RESTRICT,
-        CHECK (
-            (SELECT level FROM EMPLOYEE WHERE employee_id = e_id) = 'mid-level manager'
-        ),
         PRIMARY KEY (building_id, e_id)
     )""",
 ]
